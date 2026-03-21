@@ -23,6 +23,10 @@ public class PlayerMovementController : MonoBehaviour
     // Tableau de vecteurs contenant les destinations cibles du personnage
     [SerializeField] private Transform[] _slideTargets;
     
+    [Header("Components")]
+    // Objet Animator relié au personnage
+    [SerializeField] private Animator _animator;
+    
     [Header("Debug")]
     // Booléen indiquant si le joueur est en train de sauter
     [SerializeField] private bool _isJumping = false;
@@ -95,8 +99,13 @@ public class PlayerMovementController : MonoBehaviour
     // 2 curves utilisés, mais une seule aurait pu suffire
     private IEnumerator JumpCoroutine()
     {
+        // --------------------
+        // Jumping
+        // --------------------
         // Mise à jour du booléen insiquant que le joueur est en train de sauter
         _isJumping = true;
+        // Mise à jour du booléen insiquant que le joueur est en train de sauter au niveau de l'animator
+        _animator.SetBool("IsJumping", true);
         // Durée actuelle du saut
         float jumpTimer = 0f;
         // Durée de la moitié du saut (une moitié pour la nomtée, une moitié pour la descente)
@@ -125,6 +134,11 @@ public class PlayerMovementController : MonoBehaviour
             yield return null;
         }
         
+        // --------------------
+        // Falling
+        // --------------------
+        // Activation du trigger dans l'animator indiquant que la chute débute
+        _animator.SetTrigger("Falling");
         // Réinitialisation du timer reltif à la durée du saut en cours
         jumpTimer = 0f;
         
@@ -150,6 +164,8 @@ public class PlayerMovementController : MonoBehaviour
         //Debug.Log("Coroutine finished");
         // Mise à jour du booléen insiquant que le joueur ne saute plus
         _isJumping = false;
+        // Mise à jour du booléen insiquant que le joueur ne saute plus au niveau de l'animator
+        _animator.SetBool("IsJumping", false);
     }
 
 
@@ -183,7 +199,7 @@ public class PlayerMovementController : MonoBehaviour
             yield return null;
         }
         
-        // Mise à jour du booléen insiquant que le joueur ne glisse plus
+        // Mise à jour du booléen indiquant que le joueur ne glisse plus
         _isSliding = false;
     }
 }

@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a0ce64b8-2cf4-4a8e-a7c6-adacfa30adb6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.MumbaiInfiniteRunner/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.MumbaiInfiniteRunner/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Components/Player/3D_Assets/character-employee.fbx.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Components/Player/3D_Assets/character-employee.fbx.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Components/Player/Prefabs/Player.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Components/Player/Prefabs/Player.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Components/Player/Scripts/PlayerMovementController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Components/Player/Scripts/PlayerMovementController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Level.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Level.unity" afterDir="false" />
@@ -113,7 +114,8 @@
       <option name="presentableId" value="Default" />
       <updated>1773479220345</updated>
       <workItem from="1773479221751" duration="5285000" />
-      <workItem from="1773509029456" duration="9514000" />
+      <workItem from="1773509029456" duration="10317000" />
+      <workItem from="1774081661381" duration="2177000" />
     </task>
     <servers />
   </component>
