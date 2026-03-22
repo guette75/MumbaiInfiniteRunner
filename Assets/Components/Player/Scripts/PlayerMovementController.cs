@@ -41,6 +41,9 @@ public class PlayerMovementController : MonoBehaviour
     // Booléen indiquant si le joueur est en train de se baisser
     [SerializeField] private bool _isSlidingDown = false;
     
+    // Coroutine exécutant la glissade (déplacement latéral) du joueur
+    private Coroutine _slideCoroutine;
+    
 
     // -------------------------------------------------------------------------------
     /// <summary>
@@ -95,8 +98,17 @@ public class PlayerMovementController : MonoBehaviour
             // Cas où le joueur est déjà en train de glisser
             if (_isSliding)
             {
-                // On quitte la méthode
-                return;
+                // Afin de pouvoir exécuter un nouveau déplacement même si une glissade du joueur est déjà
+                // en cours, on arrête la précédente coroutine pour en redémarrer une nouvelle.
+                // Vérification qu'une coroutine est en cours d'exécution
+                // Eviter autant que possible les null check
+                if (_slideCoroutine != null)
+                {
+                    // Arrêt de la coroutine
+                    StopCoroutine(_slideCoroutine);
+                    // Mise à jour du booléen indiquant que le déplacement est terminé
+                    _isSliding = false;
+                }
             }
             // Cas où l'on se trouve déjà sur la ligne de gauche
             if (_currentLaneIndex == 0)
@@ -106,8 +118,8 @@ public class PlayerMovementController : MonoBehaviour
             }
             // Mise à jour de la ligne sur laquelle se trouve le joueur
             _currentLaneIndex--;
-            // Glissade (slide) à gauche de la ligne actuelle
-            StartCoroutine(SlideCoroutine(_slideTargets[_currentLaneIndex]));
+            // Glissade (slide) vers la gauche de la ligne actuelle
+            _slideCoroutine = StartCoroutine(SlideCoroutine(_slideTargets[_currentLaneIndex]));
         }
         
         // Cas de l'appui sur la flèche de droite → Glissade sur la droite
@@ -116,8 +128,17 @@ public class PlayerMovementController : MonoBehaviour
             // Cas où le joueur est déjà en train de glisser
             if (_isSliding)
             {
-                // On quitte la méthode
-                return;
+                // Afin de pouvoir exécuter un nouveau déplacement même si une glissade du joueur est déjà
+                // en cours, on arrête la précédente coroutine pour en redémarrer une nouvelle.
+                // Vérification qu'une coroutine est en cours d'exécution
+                // Eviter autant que possible les null check
+                if (_slideCoroutine != null)
+                {
+                    // Arrêt de la coroutine
+                    StopCoroutine(_slideCoroutine);
+                    // Mise à jour du booléen indiquant que le déplacement est terminé
+                    _isSliding = false;
+                }
             }
             // Cas où l'on se trouve déjà sur la ligne de droite
             if (_currentLaneIndex == _slideTargets.Length - 1)
@@ -127,8 +148,8 @@ public class PlayerMovementController : MonoBehaviour
             }
             // Mise à jour de la ligne sur laquelle se trouve le joueur
             _currentLaneIndex++;
-            // Glissade (slide) à droite de la ligne actuelle
-            StartCoroutine(SlideCoroutine(_slideTargets[_currentLaneIndex]));
+            // Glissade (slide) vers la droite de la ligne actuelle
+            _slideCoroutine = StartCoroutine(SlideCoroutine(_slideTargets[_currentLaneIndex]));
         }
     }
 
