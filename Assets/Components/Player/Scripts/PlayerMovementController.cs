@@ -23,6 +23,10 @@ public class PlayerMovementController : MonoBehaviour
     // Tableau de vecteurs contenant les destinations cibles du personnage
     [SerializeField] private Transform[] _slideTargets;
     
+    [Header("Slide Down Parameters")]
+    // Durée du mouvement de flexion
+    [SerializeField] private float _slideDownDuration = 1.5f;
+    
     [Header("Components")]
     // Objet Animator relié au personnage
     [SerializeField] private Animator _animator;
@@ -34,15 +38,40 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private int _currentLaneIndex = 1;
     // Booléen indiquant si le joueur est en train de glisser
     [SerializeField] private bool _isSliding = false;
+    // Booléen indiquant si le joueur est en train de se baisser
+    [SerializeField] private bool _isSlidingDown = false;
     
 
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Traitement à exécuter à chaque frame
+    /// </summary>
+    // -------------------------------------------------------------------------------
     public void Update()
     {
-        // Cas de l'appui sur la flèche du haut => Saut
+        // Traitement de l'appui sur la flèche du haut → Saut
+        HandleJump();
+        
+        // Traitement de l'appui sur la flèche de gauche ou la flèche de droite → Glissade
+        HandleSlide();
+        
+        // Traitement de l'appui sur la flèche du bas → Flexion
+        HandleSlideDown();
+    }
+
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Traitement de l'appui sur la flèche du haut → Exécution du saut
+    /// </summary>
+    // -------------------------------------------------------------------------------
+    private void HandleJump()
+    {
+        // Cas de l'appui sur la flèche du haut → Saut
         if (Keyboard.current.upArrowKey.wasPressedThisFrame)
         {
-            // Cas où le joueur est déjà en train de sauter
-            if (_isJumping)
+            // Cas où le joueur est déjà en train de sauter ou de se baisser
+            if (_isJumping || _isSlidingDown)
             {
                 // On quitte la méthode
                 return;
@@ -50,8 +79,17 @@ public class PlayerMovementController : MonoBehaviour
             // Démarrage de la coroutine relatif au saut
             StartCoroutine(JumpCoroutine());
         }
-        
-        // Cas de l'appui sur la flèche de gauche => Glissade sur la gauche
+    }
+
+
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Traitement de l'appui sur la flèche de gauche ou de droite → Exécution de la glissade
+    /// </summary>
+    // -------------------------------------------------------------------------------
+    private void HandleSlide()
+    {
+        // Cas de l'appui sur la flèche de gauche → Glissade sur la gauche
         if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
         {
             // Cas où le joueur est déjà en train de glisser
@@ -72,7 +110,7 @@ public class PlayerMovementController : MonoBehaviour
             StartCoroutine(SlideCoroutine(_slideTargets[_currentLaneIndex]));
         }
         
-        // Cas de l'appui sur la flèche de droite => Glissade sur la droite
+        // Cas de l'appui sur la flèche de droite → Glissade sur la droite
         if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
         {
             // Cas où le joueur est déjà en train de glisser
@@ -94,17 +132,43 @@ public class PlayerMovementController : MonoBehaviour
         }
     }
 
+
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Traitement de l'appui sur la flèche du bas → Exécution de la flexion
+    /// </summary>
+    // -------------------------------------------------------------------------------
+    private void HandleSlideDown()
+    {
+        // Cas de l'appui sur la flèche du bas → Flexion
+        if (Keyboard.current.downArrowKey.wasPressedThisFrame)
+        {
+            // Cas où le joueur est déjà en train de se baisser ou en train de sauter
+            if (_isSlidingDown || _isJumping)
+            {
+                // On quitte la méthode
+                return;
+            }
+            // Démarrage de la coroutine relatif au mouvement de flexion du joueur
+            StartCoroutine(SlideDownCoroutine());
+        }
+    }
+
     
-    // Coroutine permettant de gérer le saut en arrière plan
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Coroutine permettant de gérer le saut en arrière plan
+    /// </summary>
+    // -------------------------------------------------------------------------------
     // 2 curves utilisés, mais une seule aurait pu suffire
     private IEnumerator JumpCoroutine()
     {
         // --------------------
         // Jumping
         // --------------------
-        // Mise à jour du booléen insiquant que le joueur est en train de sauter
+        // Mise à jour du booléen indiquant que le joueur est en train de sauter
         _isJumping = true;
-        // Mise à jour du booléen insiquant que le joueur est en train de sauter au niveau de l'animator
+        // Mise à jour du booléen indiquant que le joueur est en train de sauter au niveau de l'animator
         _animator.SetBool("IsJumping", true);
         // Durée actuelle du saut
         float jumpTimer = 0f;
@@ -139,12 +203,12 @@ public class PlayerMovementController : MonoBehaviour
         // --------------------
         // Activation du trigger dans l'animator indiquant que la chute débute
         _animator.SetTrigger("Falling");
-        // Réinitialisation du timer reltif à la durée du saut en cours
+        // Réinitialisation du timer relatif à la durée du saut en cours
         jumpTimer = 0f;
         
         // Itération tant que la durée actuelle de la phase de la descente du saut n'a pas atteint la durée totale
         // prévue pour le saut (la descente n'est pas terminée)
-        while (jumpTimer < halfJumpDuration)
+        while (jumpTimer <= halfJumpDuration)
         {
             // Mise à jour de la durée du saut en ajoutant le temps écoulé depuis l'exécution de la frame précédente
             jumpTimer += Time.deltaTime;
@@ -162,25 +226,29 @@ public class PlayerMovementController : MonoBehaviour
         }
         
         //Debug.Log("Coroutine finished");
-        // Mise à jour du booléen insiquant que le joueur ne saute plus
+        // Mise à jour du booléen indiquant que le joueur ne saute plus
         _isJumping = false;
-        // Mise à jour du booléen insiquant que le joueur ne saute plus au niveau de l'animator
+        // Mise à jour du booléen indiquant que le joueur ne saute plus au niveau de l'animator
         _animator.SetBool("IsJumping", false);
     }
 
 
-    // Coroutine permettant de gérer les glissades en arrière plan (du centre vers la gauche et réciproquement, 
-    // ainsi que du centre vers la droite et réciproquement)
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Coroutine permettant de gérer les glissades en arrière plan (du centre vers la gauche et réciproquement, 
+    /// ainsi que du centre vers la droite et réciproquement)
+    /// </summary>
+    // -------------------------------------------------------------------------------
     private IEnumerator SlideCoroutine(Transform target)
     {
-        // Mise à jour du booléen insiquant que le joueur est en train de glisser
+        // Mise à jour du booléen indiquant que le joueur est en train de glisser
         _isSliding = true;
         // Durée actuelle de la glissade
         float slideTimer = 0f;
 
-        // Itération tant que la durée actuelle de la glissade dn'a pas atteint la durée totale prévue pour la
+        // Itération tant que la durée actuelle de la glissade n'a pas atteint la durée totale prévue pour la
         // glissade (la glissade n'est pas terminée)
-        while (slideTimer < _slideDuration)
+        while (slideTimer <= _slideDuration)
         {
             // Mise à jour de la durée de la glissade en ajoutant le temps écoulé depuis l'exécution de la frame
             // précédente
@@ -201,5 +269,38 @@ public class PlayerMovementController : MonoBehaviour
         
         // Mise à jour du booléen indiquant que le joueur ne glisse plus
         _isSliding = false;
+    }
+    
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Coroutine permettant de gérer la flexion du joueur en arrière plan
+    /// </summary>
+    // -------------------------------------------------------------------------------
+    private IEnumerator SlideDownCoroutine()
+    {
+        // Mise à jour du booléen indiquant que le joueur est en train de se baisser
+        _isSlidingDown = true;
+        // Mise à jour du booléen indiquant que le joueur est en train de se baisser au niveau de l'animator
+        _animator.SetBool("IsSlidingDown", true);
+        // Durée du mouvement de flexion
+        float slideTimer = 0f;
+        
+        // Itération tant que la durée actuelle de la flexion n'a pas atteint la durée totale prévue pour la
+        // flexion (la flexion n'est pas terminée)
+        while (slideTimer <= _slideDownDuration)
+        {
+            // Mise à jour de la durée de la flexion en ajoutant le temps écoulé depuis l'exécution de la frame
+            // précédente
+            slideTimer += Time.deltaTime;
+            // Indique à Unity que le traitement dans cette frame est terminée. La boucle reprendra dans la boucle
+            // suivante si elle n'est pas terminée
+            yield return null;
+        }
+        
+        // Mise à jour du booléen indiquant que le joueur ne se baisse plus
+        _isSlidingDown = false;
+        // Mise à jour du booléen indiquant que le joueur ne se baisse plus au niveau de l'animator
+        _animator.SetBool("IsSlidingDown", false);
     }
 }
