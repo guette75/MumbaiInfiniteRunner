@@ -7,9 +7,9 @@ public class PlayerMovementController : MonoBehaviour
 {
     [Header("Jump Parameters")]
     // Durée du saut
-    [SerializeField] private float _jumpDuration = 1f;
+    [SerializeField, Tooltip("Jump duration in seconds")] private float _jumpDuration = 1f;
     // Hauteur du saut
-    [SerializeField] private float _jumpHeight = 2f;
+    [SerializeField, Tooltip("Jump height in meters")] private float _jumpHeight = 2f;
     // Objet permettant de modifier le déroulement de la phase de la montée du saut
     // (pour que celui-ci ne soit plus linéaire)
     [SerializeField] private AnimationCurve _jumpCurve;
@@ -19,13 +19,13 @@ public class PlayerMovementController : MonoBehaviour
     
     [Header("Slide Parameters")]
     // Durée du mouvement de glisse
-    [SerializeField] private float _slideDuration = 1f;
+    [SerializeField, Tooltip("Slide duration in seconds")] private float _slideDuration = 1f;
     // Tableau de vecteurs contenant les destinations cibles du personnage
     [SerializeField] private Transform[] _slideTargets;
     
     [Header("Slide Down Parameters")]
     // Durée du mouvement de flexion
-    [SerializeField] private float _slideDownDuration = 1.5f;
+    [SerializeField, Tooltip("Slide down duration in seconds")] private float _slideDownDuration = 1.5f;
     
     [Header("Components")]
     // Objet Animator relié au personnage
