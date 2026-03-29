@@ -148,8 +148,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cdd5f0df28bb47e9b0a77f4a0e036c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleController
-  _translationSpeed: 1
+  _translationSpeed: 2
   _activeChunksCount: 5
+  _behindChunksCount: 1
   _chunksPool:
   - {fileID: 7869061756426622565, guid: 3773dc2f9cd3d46fa908a8660f8dfd45, type: 3}
 --- !u!4 &53994378
