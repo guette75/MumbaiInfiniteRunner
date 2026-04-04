@@ -319,6 +319,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCollisionController
   _sphereCenter: {x: 0, y: 0.35, z: 0}
   _sphereRadius: 0.33
+  _shrinkSphereCenter: {x: 0, y: 0.25, z: 0}
+  _shrinkSphereRadius: 0.25
 --- !u!95 &8894019793378164206
 Animator:
   serializedVersion: 7

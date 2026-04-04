@@ -44,6 +44,20 @@ public class PlayerMovementController : MonoBehaviour
     // Coroutine exécutant la glissade (déplacement latéral) du joueur
     private Coroutine _slideCoroutine;
     
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Traitement exécuté au réveil de l'objet
+    /// </summary>
+    // -------------------------------------------------------------------------------
+    public void Awake()
+    {
+        // Activation de l'évènement à false indiquant qu'aucun mouvement de flexion n'est en cours lors du réveil de
+        // l'objet
+        EventSystem.OnPlayerSlideDown?.Invoke(false);
+        Debug.Log("Player awake");
+    }
+
 
     // -------------------------------------------------------------------------------
     /// <summary>
@@ -304,6 +318,8 @@ public class PlayerMovementController : MonoBehaviour
         _isSlidingDown = true;
         // Mise à jour du booléen indiquant que le joueur est en train de se baisser au niveau de l'animator
         _animator.SetBool("IsSlidingDown", true);
+        // Activation de l'évènement relatif à la flexion du joueur
+        EventSystem.OnPlayerSlideDown?.Invoke(true);
         // Durée du mouvement de flexion
         float slideTimer = 0f;
         
@@ -323,5 +339,7 @@ public class PlayerMovementController : MonoBehaviour
         _isSlidingDown = false;
         // Mise à jour du booléen indiquant que le joueur ne se baisse plus au niveau de l'animator
         _animator.SetBool("IsSlidingDown", false);
+        // Désactivation de l'évènement relatif à la flexion du joueur
+        EventSystem.OnPlayerSlideDown?.Invoke(false);
     }
 }
