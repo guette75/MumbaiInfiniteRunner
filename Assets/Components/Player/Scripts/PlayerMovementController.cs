@@ -47,7 +47,7 @@ public class PlayerMovementController : MonoBehaviour
     
     // -------------------------------------------------------------------------------
     /// <summary>
-    /// Traitement exécuté au réveil de l'objet
+    /// Traitement exécuté au réveil de l'objet. Cette méthode est appelée en tout premier.
     /// </summary>
     // -------------------------------------------------------------------------------
     public void Awake()

@@ -76,6 +76,8 @@ public class PlayerCollisionController : MonoBehaviour
         if (hitColliders.Length > 0 && !_isHit)
         {
             Debug.Log("Player hit something");
+            // Déclenchement de l'évènement indiquant qu'une collision avec le joueur vient d'avoir lieu
+            EventSystem.OnPlayerCollision?.Invoke();
             // Affectation du booléen indiquant qu'un obstacle a été percuté
             _isHit = true;
         }
@@ -129,13 +131,13 @@ public class PlayerCollisionController : MonoBehaviour
         // Dessin du gizmo de la sphère
         Gizmos.DrawWireSphere(transform.position + _sphereCenter, _sphereRadius);
         // Gizmo lorsque le joueur est baissé
-        // Affectation de la couleur rouge pour le gizmo
+        // Affectation de la couleur verte pour le gizmo
         Gizmos.color = Color.green;
         // Dessin du gizmo de la sphère
         Gizmos.DrawWireSphere(transform.position + _shrinkSphereCenter, _shrinkSphereRadius);
         // Gizmo durant l'exécution du jeu
-        // Affectation de la couleur rouge pour le gizmo
-        Gizmos.color = Color.red;
+        // Affectation de la couleur jaune pour le gizmo
+        Gizmos.color = Color.yellow;
         // Dessin du gizmo de la sphère
         Gizmos.DrawWireSphere(PlayerSpherePosition, _currentSphereRadius);
     }
