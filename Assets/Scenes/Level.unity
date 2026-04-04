@@ -152,7 +152,10 @@ MonoBehaviour:
   _activeChunksCount: 5
   _behindChunksCount: 1
   _chunksPool:
+  - {fileID: 7869061756426622565, guid: 75e8f36b511014295a2e9c9c4d235013, type: 3}
   - {fileID: 7869061756426622565, guid: 3773dc2f9cd3d46fa908a8660f8dfd45, type: 3}
+  - {fileID: 7869061756426622565, guid: 710ccfa37039a472aa9bb4a6cb066193, type: 3}
+  - {fileID: 7869061756426622565, guid: 88117ba97cf0b4b15bf722af5301c936, type: 3}
 --- !u!4 &53994378
 Transform:
   m_ObjectHideFlags: 0
@@ -532,10 +535,6 @@ PrefabInstance:
     - target: {fileID: 7094412411023624857, guid: e3d1b8dd7a88b4348be62f3bcdf55be5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8501010378284124543, guid: e3d1b8dd7a88b4348be62f3bcdf55be5, type: 3}
-      propertyPath: _slideDuration
-      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
