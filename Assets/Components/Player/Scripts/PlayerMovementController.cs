@@ -40,9 +40,36 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private bool _isSliding = false;
     // Booléen indiquant si le joueur est en train de se baisser
     [SerializeField] private bool _isSlidingDown = false;
+    // Booléen indiquant que le joueur est mort
+    [SerializeField] private bool _isDead;
     
     // Coroutine exécutant la glissade (déplacement latéral) du joueur
     private Coroutine _slideCoroutine;
+    
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Méthode appelée une seule fois juste avant la première exécution de la méthode update (exécutée à chaque
+    /// nouvelle frame), juste après la création de cette instance.
+    /// </summary>
+    // -------------------------------------------------------------------------------
+    private void Start()
+    {
+        // Abonnement à l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
+        EventSystem.OnPlayerLifeUpdated += HandlePlayerLifeUpdated;
+    }
+
+
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Méthode appelée une seule fois lorsque l'objet est détruit.
+    /// </summary>
+    // -------------------------------------------------------------------------------
+    private void OnDestroy()
+    {
+        // Désabonnement de l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
+        EventSystem.OnPlayerLifeUpdated -= HandlePlayerLifeUpdated;
+    }
     
     
     // -------------------------------------------------------------------------------
@@ -66,12 +93,16 @@ public class PlayerMovementController : MonoBehaviour
     // -------------------------------------------------------------------------------
     public void Update()
     {
+        // Cas où le joueur est mort
+        if (_isDead)
+        {
+            // On quitte la méthode car aucune action n'est désormais possible
+            return;
+        }
         // Traitement de l'appui sur la flèche du haut → Saut
         HandleJump();
-        
         // Traitement de l'appui sur la flèche de gauche ou la flèche de droite → Glissade
         HandleSlide();
-        
         // Traitement de l'appui sur la flèche du bas → Flexion
         HandleSlideDown();
     }
@@ -341,5 +372,27 @@ public class PlayerMovementController : MonoBehaviour
         _animator.SetBool("IsSlidingDown", false);
         // Désactivation de l'évènement relatif à la flexion du joueur
         EventSystem.OnPlayerSlideDown?.Invoke(false);
+    }
+    
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Méthode appelée lorsque le nombre de vies du joueur a évolué (à la baisse)
+    /// </summary>
+    /// <param name="playerLifeCount"></param>
+    // -------------------------------------------------------------------------------
+    private void HandlePlayerLifeUpdated(int playerLifeCount)
+    {
+        // Cas où le joueur possède encore des vies
+        if (playerLifeCount > 0)
+        {
+            // On quitte la méthode car il n'y a rien à faire
+            return;
+        }
+        // Appel du trigger relatif à la mort du joueur dans l'animator (l'animation correspondant à la mort du joueur
+        // va se jouer)
+        _animator.SetTrigger("Dead");
+        // Mise à jour du booléen indiquant que le joueur n'a plus de vie
+        _isDead = true;
     }
 }

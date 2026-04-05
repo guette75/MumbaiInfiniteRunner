@@ -27,7 +27,22 @@ public class ObstacleController : MonoBehaviour
     // -------------------------------------------------------------------------------
     private void Start()
     {
+        // Abonnement à l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
+        EventSystem.OnPlayerLifeUpdated += HandlePlayerLifeUpdated;
+        // Création des plans Unity pré-construits initiaux
         AddBaseChunk();
+    }
+    
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Méthode appelée une seule fois lorsque l'objet est détruit.
+    /// </summary>
+    // -------------------------------------------------------------------------------
+    private void OnDestroy()
+    {
+        // Désabonnement de l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
+        EventSystem.OnPlayerLifeUpdated -= HandlePlayerLifeUpdated;
     }
 
 
@@ -173,5 +188,25 @@ public class ObstacleController : MonoBehaviour
     private ChunkController LastActiveChunk()
     {
         return _instanceChunks[_instanceChunks.Count - 1];
+    }
+    
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Méthode appelée lorsque le nombre de vies du joueur a évolué (à la baisse)
+    /// </summary>
+    /// <param name="playerLifeCount"></param>
+    // -------------------------------------------------------------------------------
+    private void HandlePlayerLifeUpdated(int playerLifeCount)
+    {
+        // Cas où le joueur possède encore des vies
+        if (playerLifeCount > 0)
+        {
+            // On quitte la méthode car il n'y a rien à faire
+            return;
+        }
+        // Mise à jour de la vitesse de déplacement des plans contenant les objets et les obstacles
+        // On met la valeur à 0 car le joueur est mort
+        _translationSpeed = 0;
     }
 }
