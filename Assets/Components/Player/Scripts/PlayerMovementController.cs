@@ -386,6 +386,8 @@ public class PlayerMovementController : MonoBehaviour
         // Cas où le joueur possède encore des vies
         if (playerLifeCount > 0)
         {
+            // On déclenche l'animation relative à la prise de dégâts par le joueur
+            _animator.SetTrigger("TakeDamage");
             // On quitte la méthode car il n'y a rien à faire
             return;
         }

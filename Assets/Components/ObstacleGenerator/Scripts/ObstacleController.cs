@@ -10,6 +10,8 @@ public class ObstacleController : MonoBehaviour
     [SerializeField] private int _activeChunksCount = 5;
     // Nombre de plan Unity pré-construits se trouvant derrière le joueur en attente de destruction
     [SerializeField] private int _behindChunksCount = 1;
+    // Durée de l'arrêt du défilement des plans Unity pré-construits lorsque le joueur subit des dégâts
+    [SerializeField] private float _stopDelayOnDamage = 0.2f;
     
     [Header("Components")]
     // Pool des plans Unity pré-construits disponibles pour l'affichage infini
@@ -17,6 +19,12 @@ public class ObstacleController : MonoBehaviour
     
     // Liste de plan Unity pré-construits instantiés
     private readonly List<ChunkController> _instanceChunks = new();
+    // Sauvegarde de la vitesse de translation des plans Unity affectée à la configuration du jeu
+    private float _baseTranslationSpeed;
+    // Chronomètre relatif à l'arrêt du défilement des plans Unity pré-construits
+    private float _stopDelayTimer;
+    // Booléen indiquant si le chronomètre relatif à l'arrêt du défilement des plans Unity pré-construits est en route
+    private bool _stoppedTimer;
 
 
     // -------------------------------------------------------------------------------
@@ -27,6 +35,8 @@ public class ObstacleController : MonoBehaviour
     // -------------------------------------------------------------------------------
     private void Start()
     {
+        // Sauvegarde de la vitesse de déroulement des plans Unity configurée pour le jeu
+        _baseTranslationSpeed = _translationSpeed;
         // Abonnement à l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
         EventSystem.OnPlayerLifeUpdated += HandlePlayerLifeUpdated;
         // Création des plans Unity pré-construits initiaux
@@ -54,6 +64,9 @@ public class ObstacleController : MonoBehaviour
     /// // -------------------------------------------------------------------------------
     private void Update()
     {
+        // Gestion du chronomètre relatif à l'arrêt du défilement des plans Unity suite à la collision du joueur
+        // avec un obstacle (ne fera rien si aucune collision n'a eu lieu)
+        resetMovementAfterDelay();
         // Itération sur l'ensemble des plans Unity pré-construits
         foreach (ChunkController chunk in _instanceChunks)
         {
@@ -202,11 +215,43 @@ public class ObstacleController : MonoBehaviour
         // Cas où le joueur possède encore des vies
         if (playerLifeCount > 0)
         {
+            // Démarrage du chronomètre relatif à l'arrêt du défilement des plans Unity suite à la collision du
+            // joueur avec un obstacle
+            _stoppedTimer = true;
             // On quitte la méthode car il n'y a rien à faire
             return;
         }
         // Mise à jour de la vitesse de déplacement des plans contenant les objets et les obstacles
         // On met la valeur à 0 car le joueur est mort
         _translationSpeed = 0;
+    }
+    
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Méthode gérant le chronomètre relatif à l'arrêt du défilement des plans Unity pré-construits suite à la
+    /// collision du joueur avec un obstacle
+    /// </summary>
+    // -------------------------------------------------------------------------------
+    private void resetMovementAfterDelay()
+    {
+        // Cas où le chronomètre relatif à l'arrêt du défilement des plans Unity n'est pas actif
+        if (!_stoppedTimer)
+        {
+            // Le chronomètre n'est pas actif, il n'y a rien à faire, on sort immédiatement de la méthode
+            return;
+        }
+        // Mise à jour de la durée du chronomètre
+        _stopDelayTimer += Time.deltaTime;
+        // Cas où la durée de l'arrêt du défilement des plans Unity est terminé
+        if (_stopDelayTimer >= _stopDelayOnDamage)
+        {
+            // Arrêt du chronomètre
+            _stoppedTimer = false;
+            // Redémarrage du défilement des plans Unity
+            _translationSpeed = _baseTranslationSpeed;
+            // Réinitialisation du chronomètre
+            _stopDelayTimer = 0f;
+        }
     }
 }
