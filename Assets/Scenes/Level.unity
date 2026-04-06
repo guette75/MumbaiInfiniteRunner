@@ -151,6 +151,7 @@ MonoBehaviour:
   _translationSpeed: 2
   _activeChunksCount: 5
   _behindChunksCount: 1
+  _stopDelayOnDamage: 0.6
   _chunksPool:
   - {fileID: 7869061756426622565, guid: 75e8f36b511014295a2e9c9c4d235013, type: 3}
   - {fileID: 7869061756426622565, guid: 3773dc2f9cd3d46fa908a8660f8dfd45, type: 3}
