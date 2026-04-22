@@ -10,4 +10,6 @@ public static class EventSystem
     public static Action OnPlayerCollision;
     // Evènement relatif à la mise à jour du nombre de vies du joueur
     public static Action<int> OnPlayerLifeUpdated;
+    // Evènement relatif au changement d'état dans la machine à états du jeu
+    public static Action<State> OnStateChanged;
 }

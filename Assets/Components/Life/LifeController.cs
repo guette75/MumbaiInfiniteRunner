@@ -57,11 +57,4 @@ public class LifeController : MonoBehaviour
         // Appel de l'évènement relatif à la mise à jour du nombre de vies du joueur
         EventSystem.OnPlayerLifeUpdated?.Invoke(_currentLifeCount);
     }
-
-    
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
