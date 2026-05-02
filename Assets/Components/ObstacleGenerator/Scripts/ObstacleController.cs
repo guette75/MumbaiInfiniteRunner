@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class ObstacleController : MonoBehaviour
 {
@@ -26,6 +28,18 @@ public class ObstacleController : MonoBehaviour
     // Booléen indiquant si le chronomètre relatif à l'arrêt du défilement des plans Unity pré-construits est en route
     private bool _stoppedTimer;
 
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Traitement exécuté au réveil de l'objet. Cette méthode est appelée en tout premier.
+    /// </summary>
+    // -------------------------------------------------------------------------------
+    public void Awake()
+    {
+        // Abonnement à l'évènement déclenché lors du changement d'état du jeu
+        EventSystem.OnStateChanged += HandleStateChanged;
+    }
+
 
     // -------------------------------------------------------------------------------
     /// <summary>
@@ -37,8 +51,8 @@ public class ObstacleController : MonoBehaviour
     {
         // Sauvegarde de la vitesse de déroulement des plans Unity configurée pour le jeu
         _baseTranslationSpeed = _translationSpeed;
-        // Abonnement à l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
-        EventSystem.OnPlayerLifeUpdated += HandlePlayerLifeUpdated;
+        // Lors du démarrage, on ne fait pas défiler le tapis (on attend la fin du compte à rebours)
+        _translationSpeed = 0;
         // Création des plans Unity pré-construits initiaux
         AddBaseChunk();
     }
@@ -53,6 +67,8 @@ public class ObstacleController : MonoBehaviour
     {
         // Désabonnement de l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
         EventSystem.OnPlayerLifeUpdated -= HandlePlayerLifeUpdated;
+        // Désabonnement de l'évènement déclenché lors du changement d'état du jeu
+        EventSystem.OnStateChanged -= HandleStateChanged;
     }
 
 
@@ -224,6 +240,29 @@ public class ObstacleController : MonoBehaviour
         // Mise à jour de la vitesse de déplacement des plans contenant les objets et les obstacles
         // On met la valeur à 0 car le joueur est mort
         _translationSpeed = 0;
+    }
+    
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Méthode appelée lorsque l'état courant du jeu a changé
+    /// </summary>
+    /// <param name="newState"></param>
+    // -------------------------------------------------------------------------------
+    private void HandleStateChanged(State newState)
+    {
+        // Cas où l'état passé en paramètre ne correspond pas à un état relatif à l'exécution du jeu
+        if (newState is not GameState)
+        {
+            // Désabonnement de l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
+            EventSystem.OnPlayerLifeUpdated -= HandlePlayerLifeUpdated;
+            // On quitte la méthode
+            return;
+        }
+        // On affecte la vitesse du tapis afin que le jeu démarre !
+        _translationSpeed =  _baseTranslationSpeed;
+        // Abonnement à l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
+        EventSystem.OnPlayerLifeUpdated += HandlePlayerLifeUpdated;
     }
     
     

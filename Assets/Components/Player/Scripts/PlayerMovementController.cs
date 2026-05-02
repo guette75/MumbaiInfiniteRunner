@@ -40,24 +40,11 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private bool _isSliding = false;
     // Booléen indiquant si le joueur est en train de se baisser
     [SerializeField] private bool _isSlidingDown = false;
-    // Booléen indiquant que le joueur est mort
-    [SerializeField] private bool _isDead;
+    // Booléen indiquant que les mouvements du joueur sont vérouillés
+    [SerializeField] private bool _locked;
     
     // Coroutine exécutant la glissade (déplacement latéral) du joueur
     private Coroutine _slideCoroutine;
-    
-    
-    // -------------------------------------------------------------------------------
-    /// <summary>
-    /// Méthode appelée une seule fois juste avant la première exécution de la méthode update (exécutée à chaque
-    /// nouvelle frame), juste après la création de cette instance.
-    /// </summary>
-    // -------------------------------------------------------------------------------
-    private void Start()
-    {
-        // Abonnement à l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
-        EventSystem.OnPlayerLifeUpdated += HandlePlayerLifeUpdated;
-    }
 
 
     // -------------------------------------------------------------------------------
@@ -69,6 +56,8 @@ public class PlayerMovementController : MonoBehaviour
     {
         // Désabonnement de l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
         EventSystem.OnPlayerLifeUpdated -= HandlePlayerLifeUpdated;
+        // Désabonnement de l'évènement déclenché lors du changement d'état du jeu
+        EventSystem.OnStateChanged -= HandleStateChanged;
     }
     
     
@@ -83,6 +72,10 @@ public class PlayerMovementController : MonoBehaviour
         // l'objet
         EventSystem.OnPlayerSlideDown?.Invoke(false);
         Debug.Log("Player awake");
+        // Abonnement à l'évènement déclenché lors du changement d'état du jeu
+        EventSystem.OnStateChanged += HandleStateChanged;
+        // Au démarrage du jeu, les mouvements du joueur sont verouillés
+        _locked = true;
     }
 
 
@@ -93,8 +86,8 @@ public class PlayerMovementController : MonoBehaviour
     // -------------------------------------------------------------------------------
     public void Update()
     {
-        // Cas où le joueur est mort
-        if (_isDead)
+        // Cas où les mouvements du joueur sont verouillés
+        if (_locked)
         {
             // On quitte la méthode car aucune action n'est désormais possible
             return;
@@ -394,7 +387,36 @@ public class PlayerMovementController : MonoBehaviour
         // Appel du trigger relatif à la mort du joueur dans l'animator (l'animation correspondant à la mort du joueur
         // va se jouer)
         _animator.SetTrigger("Dead");
-        // Mise à jour du booléen indiquant que le joueur n'a plus de vie
-        _isDead = true;
+        // Mise à jour du booléen indiquant que le joueur n'a plus de vie et qu'il ne peut donc plus effectuer de
+        // mouvements
+        _locked = true;
+    }
+    
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Méthode appelée lorsque l'état courant du jeu a changé
+    /// </summary>
+    /// <param name="newState"></param>
+    // -------------------------------------------------------------------------------
+    private void HandleStateChanged(State newState)
+    {
+        // Cas où l'état passé en paramètre ne correspond pas à un état relatif à l'exécution du jeu
+        if (newState is not GameState)
+        {
+            // Verrouillage des mouvements du joueur
+            _locked = true;
+            // Désabonnement de l'évènement déclenché lors de la mise à jour du nombre de vies du joueur,
+            // car l'évènement ne correspond pas à l'exécution du jeu
+            EventSystem.OnPlayerLifeUpdated -= HandlePlayerLifeUpdated;
+            // On quitte la méthode
+            return;
+        }
+        // Changement d'animation du joueur : Il passe de l'état inactif à l'état de course
+        _animator.SetTrigger("Running");
+        // Abonnement à l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
+        EventSystem.OnPlayerLifeUpdated += HandlePlayerLifeUpdated;
+        // Déverrouillage des mouvements du joueur
+        _locked = false;
     }
 }
