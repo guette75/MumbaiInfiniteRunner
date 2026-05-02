@@ -14,11 +14,11 @@ public class UIGameOverController : MonoBehaviour
     {
         // Désactivation de l'écran de fin de jeu
         _gameOverScreen.SetActive(false);
-        // Abonnement à l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
-        EventSystem.OnPlayerLifeUpdated += HandlePlayerLife;
+        // Abonnement à l'évènement déclenché lors du changement d'état du jeu
+        EventSystem.OnStateChanged += HandleStateChanged;
     }
-    
-    
+
+
     // -------------------------------------------------------------------------------
     /// <summary>
     /// Méthode appelée une seule fois lorsque l'objet est détruit.
@@ -26,8 +26,8 @@ public class UIGameOverController : MonoBehaviour
     // -------------------------------------------------------------------------------
     private void OnDestroy()
     {
-        // Désabonnement de l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
-        EventSystem.OnPlayerLifeUpdated -= HandlePlayerLife;
+        // Désabonnement de l'évènement déclenché lors du changement d'état du jeu
+        EventSystem.OnStateChanged -= HandleStateChanged;
     }
     
     
@@ -42,23 +42,16 @@ public class UIGameOverController : MonoBehaviour
         SceneLoaderService.loadMainMenu();
     }
     
-
     
     // -------------------------------------------------------------------------------
     /// <summary>
-    /// Méthode appelée lorsque le nombre de vies du joueur a évolué (à la baisse)
+    /// Méthode appelée lorsque l'état courant du jeu a changé
     /// </summary>
-    /// <param name="playerLifeCount"></param>
+    /// <param name="newState"></param>
     // -------------------------------------------------------------------------------
-    private void HandlePlayerLife(int playerLifeCount)
+    private void HandleStateChanged(State newState)
     {
-        // Cas où le joueur possède encore des vies
-        if (playerLifeCount > 0)
-        {
-            // On quitte la méthode
-            return;
-        }
-        // Activation de l'écran de fin de jeu
-        _gameOverScreen.SetActive(true);
+        // Activation de l'écran affichant la fin du jeu si l'état passé en paramètre correspond à l'état de fin du jeu
+        _gameOverScreen.SetActive(newState is GameOverState);
     }
 }

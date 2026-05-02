@@ -384,6 +384,8 @@ public class PlayerMovementController : MonoBehaviour
             // On quitte la méthode car il n'y a rien à faire
             return;
         }
+        // Arrêt des coroutines
+        StopAllCoroutines();
         // Appel du trigger relatif à la mort du joueur dans l'animator (l'animation correspondant à la mort du joueur
         // va se jouer)
         _animator.SetTrigger("Dead");
@@ -406,10 +408,12 @@ public class PlayerMovementController : MonoBehaviour
         {
             // Verrouillage des mouvements du joueur
             _locked = true;
+            // Arrêt des coroutines
+            StopAllCoroutines();
             // Désabonnement de l'évènement déclenché lors de la mise à jour du nombre de vies du joueur,
             // car l'évènement ne correspond pas à l'exécution du jeu
             EventSystem.OnPlayerLifeUpdated -= HandlePlayerLifeUpdated;
-            // On quitte la méthode
+            // On quitte la méthode car il n'y a rien à faire
             return;
         }
         // Changement d'animation du joueur : Il passe de l'état inactif à l'état de course
