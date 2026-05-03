@@ -5,15 +5,19 @@ using Random = UnityEngine.Random;
 
 public class ObstacleController : MonoBehaviour
 {
+    // On appelle plan soit la zone pré-construite (comme réalisée en début de projet), soit un groupement d'objets
+    // représentant un ou plusieurs obstacles
     [Header("Parameters")]
     // Vitesse de déplacement des plans contenant les objets et les obstacles
     [SerializeField, Tooltip("Transaction speed of chunks in m/s")] private float _translationSpeed = 1f;
-    // Nombre de plan Unity pré-construits actifs à afficher
+    // Nombre de plans Unity pré-construits actifs à afficher
     [SerializeField] private int _activeChunksCount = 5;
-    // Nombre de plan Unity pré-construits se trouvant derrière le joueur en attente de destruction
+    // Nombre de plans Unity pré-construits se trouvant derrière le joueur en attente de destruction
     [SerializeField] private int _behindChunksCount = 1;
     // Durée de l'arrêt du défilement des plans Unity pré-construits lorsque le joueur subit des dégâts
     [SerializeField] private float _stopDelayOnDamage = 0.2f;
+    // Distance entre 2 plans Unity pré-construits
+    [SerializeField] private float _distanceToNextChunk = 5f;
     
     [Header("Components")]
     // Pool des plans Unity pré-construits disponibles pour l'affichage infini
@@ -204,8 +208,9 @@ public class ObstacleController : MonoBehaviour
         for (int i = 0; i < missingChunksCount; i++)
         {
             // Ajout du nouveau plan Unity dans la liste des plans pré-construits actifs avec comme position de départ
-            // La position de l'ancre situé à la fin du plan précédent
-            ChunkController chunk = AddChunk(LastActiveChunk().EndAnchor);
+            // La position de l'ancre situé à la fin du plan précédent plus la distance configurée entre 2 plans
+            ChunkController chunk = 
+                AddChunk(LastActiveChunk().EndAnchor + new Vector3(0, 0, _distanceToNextChunk));
             // Ajout du nouveau plan Unity dans la liste des plans pré-construits
             _instanceChunks.Add(chunk);
         }
@@ -235,8 +240,9 @@ public class ObstacleController : MonoBehaviour
                 continue;
             }
             // Appel de la méthode d'affichage d'un plan Unity avec la position de fin du plan précédent contenu dans
-            // l'ancre de fin rattaché à ce plan
-            ChunkController chunk = AddChunk(LastActiveChunk().EndAnchor);
+            // l'ancre de fin rattaché à ce plan plus la distance configurée entre 2 plans
+            ChunkController chunk = 
+                AddChunk(LastActiveChunk().EndAnchor + new Vector3(0, 0, _distanceToNextChunk));
             // Ajout du plan Unity affiché dans la liste des plans Unity actifs
             _instanceChunks.Add(chunk);
         }

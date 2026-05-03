@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 53994378}
   - component: {fileID: 53994377}
   m_Layer: 0
-  m_Name: ObstacleController
+  m_Name: ObstacleGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -152,11 +152,14 @@ MonoBehaviour:
   _activeChunksCount: 5
   _behindChunksCount: 1
   _stopDelayOnDamage: 0.6
+  _distanceToNextChunk: 10
   _chunksPool:
   - {fileID: 7869061756426622565, guid: 75e8f36b511014295a2e9c9c4d235013, type: 3}
   - {fileID: 7869061756426622565, guid: 3773dc2f9cd3d46fa908a8660f8dfd45, type: 3}
   - {fileID: 7869061756426622565, guid: 710ccfa37039a472aa9bb4a6cb066193, type: 3}
   - {fileID: 7869061756426622565, guid: 88117ba97cf0b4b15bf722af5301c936, type: 3}
+  _speedUpInterval: 15
+  _speedUpIncrease: 0.1
 --- !u!4 &53994378
 Transform:
   m_ObjectHideFlags: 0
@@ -631,6 +634,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2120529031
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2120529033}
+  - component: {fileID: 2120529032}
+  m_Layer: 0
+  m_Name: FloorGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2120529032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120529031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cdd5f0df28bb47e9b0a77f4a0e036c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObstacleController
+  _translationSpeed: 2
+  _activeChunksCount: 5
+  _behindChunksCount: 1
+  _stopDelayOnDamage: 0.6
+  _distanceToNextChunk: 0
+  _chunksPool:
+  - {fileID: 7869061756426622565, guid: 1f3254e0be797431780ab6d3490f8f97, type: 3}
+  _speedUpInterval: 15
+  _speedUpIncrease: 0.1
+--- !u!4 &2120529033
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120529031}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -640,5 +696,6 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 1315585564}
   - {fileID: 53994378}
+  - {fileID: 2120529033}
   - {fileID: 1629548619}
   - {fileID: 267609177}
