@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class GameState : State
 {
+    // Chronomètre
+    public float Timer { get; private set; }
+    
     // -------------------------------------------------------------------------------
     /// <summary>
     /// Constructeur.
@@ -19,9 +22,11 @@ public class GameState : State
     // -------------------------------------------------------------------------------
     public override void Enter()
     {
+        Debug.Log("Game started");
         // Abonnement à l'évènement relatif à la mise à jour du nombre de vies du joueur
         EventSystem.OnPlayerLifeUpdated += HandlePlayerLifeUpdated;
-        Debug.Log("Game started");
+        // Initialisation du Timer
+        Timer = 0f;
     }
 
 
@@ -46,6 +51,8 @@ public class GameState : State
     public override void Update()
     {
         Debug.Log("Game updated");
+        // Incrémentation du chronomètre
+        Timer += Time.deltaTime;
     }
     
     

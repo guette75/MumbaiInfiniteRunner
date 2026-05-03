@@ -19,6 +19,14 @@ public class ObstacleController : MonoBehaviour
     // Pool des plans Unity pré-construits disponibles pour l'affichage infini
     [SerializeField] private ChunkController[] _chunksPool;
     
+    [Header("Speed Up")]
+    // Intervalle entre deux augmentations de vitesse du jeu (génération des obstacles plus rapide)
+    [SerializeField, Tooltip("Interval in seconds between each speed increase")] 
+    private float _speedUpInterval = 15f;
+    // Coefficient relatif à l'augmentation de la vitesse du jeu
+    [SerializeField, Tooltip("Speed increase applied on each interval")]
+    private float _speedUpIncrease = 0.1f;
+    
     // Liste de plan Unity pré-construits instantiés
     private readonly List<ChunkController> _instanceChunks = new();
     // Sauvegarde de la vitesse de translation des plans Unity affectée à la configuration du jeu
@@ -27,6 +35,12 @@ public class ObstacleController : MonoBehaviour
     private float _stopDelayTimer;
     // Booléen indiquant si le chronomètre relatif à l'arrêt du défilement des plans Unity pré-construits est en route
     private bool _stoppedTimer;
+    // Booléen indiquant si l'état actuel correspond bien à l'exécution du jeu
+    private bool _inGameState;
+    // Booléen indiquant que la vitesse du jeu vient d'être augmenté
+    private bool _increasedSpeed;
+    // Référence à l'état représentant l'exécution actuelle du jeu
+    private GameState _gameState;
 
     
     // -------------------------------------------------------------------------------
@@ -49,6 +63,8 @@ public class ObstacleController : MonoBehaviour
     // -------------------------------------------------------------------------------
     private void Start()
     {
+        // Initialisation du booléen relatif à la mise à jour de la vitesse de défilement des planq Unity
+        _increasedSpeed = false;
         // Sauvegarde de la vitesse de déroulement des plans Unity configurée pour le jeu
         _baseTranslationSpeed = _translationSpeed;
         // Lors du démarrage, on ne fait pas défiler le tapis (on attend la fin du compte à rebours)
@@ -77,12 +93,56 @@ public class ObstacleController : MonoBehaviour
     /// Méthode appelée à chaque exécution d'un frame
     /// Permet le déplacement des plans Unity à chaque exécution d'une nouvelle frame
     /// </summary>
-    /// // -------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------
     private void Update()
     {
+        // Cas où le jeu n'est pas encore en cours d'exécution
+        if (!_inGameState)
+        {
+            // On quitte la méthode, car il n'y a rien à faire
+            return;
+        }
         // Gestion du chronomètre relatif à l'arrêt du défilement des plans Unity suite à la collision du joueur
         // avec un obstacle (ne fera rien si aucune collision n'a eu lieu)
-        resetMovementAfterDelay();
+        ResetMovementAfterDelay();
+        // Effectue une translation de l'ensemble des plans Unity pré-construits
+        TranslateChunks();
+        // Mise à jour de la liste des plans Unity pré-construits
+        UpdateChunks();
+    }
+    
+    
+    // -------------------------------------------------------------------------------
+    /// <summary>
+    /// Tranlate les plans Unity pré-construits
+    /// Permet le déplacement des plans Unity à chaque exécution d'une nouvelle frame
+    /// </summary>
+    /// // -------------------------------------------------------------------------------
+    private void TranslateChunks()
+    {
+        // Récupération du chronomètre mis en place dans le GameState
+        float gameTimer = _gameState.Timer;
+        // Cas où la durée de l'intervalle entre deux augmentations de vitesse a été atteinte
+        if (Mathf.RoundToInt(gameTimer % _speedUpInterval) == 0)
+        {
+            // Cas où la vitesse de défilement des plans Unity ne vient pas d'être augmentée
+            if (!_increasedSpeed)
+            {
+                Debug.Log("Speed up");
+                // Mise à jour de la vitesse de déplacement des plans Unity
+                _translationSpeed += _speedUpIncrease;
+                // Mise à jour de la configuration de la vitesse de déplacement des plans Unity
+                _baseTranslationSpeed = _translationSpeed;
+                // Mise à jour du booléen indiquant que la vitesse de défilement des plans Unity vient d'être augmentée
+                _increasedSpeed = true;
+            }
+        }
+        // Cas où la durée de l'intervalle entre deux augmentations de vitesse n'a pas été atteinte
+        else
+        {
+            // Mise à jour du booléen indiquant que la vitesse de défilement des plans Unity ne vient pas d'être augmentée
+            _increasedSpeed = false;
+        }
         // Itération sur l'ensemble des plans Unity pré-construits
         foreach (ChunkController chunk in _instanceChunks)
         {
@@ -90,8 +150,6 @@ public class ObstacleController : MonoBehaviour
             // 2 affichages de frame
             chunk.transform.Translate(Vector3.back * (Time.deltaTime * _translationSpeed));
         }
-        // Mise à jour de la liste des plans Unity pré-construits
-        UpdateChunks();
     }
 
     
@@ -252,13 +310,19 @@ public class ObstacleController : MonoBehaviour
     private void HandleStateChanged(State newState)
     {
         // Cas où l'état passé en paramètre ne correspond pas à un état relatif à l'exécution du jeu
-        if (newState is not GameState)
+        if (newState is not GameState gameState)
         {
             // Désabonnement de l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
             EventSystem.OnPlayerLifeUpdated -= HandlePlayerLifeUpdated;
+            // Mise à jour du booléen indiquant que le jeu n'est pas en cours d'exécution
+            _inGameState = false;
             // On quitte la méthode
             return;
         }
+        // Mise à jour du booléen indiquant que le jeu est bien en cours d'exécution
+        _inGameState = true;
+        // Affectation de l'état représentant l'exécution du jeu
+        _gameState = gameState;
         // On affecte la vitesse du tapis afin que le jeu démarre !
         _translationSpeed =  _baseTranslationSpeed;
         // Abonnement à l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
@@ -272,7 +336,7 @@ public class ObstacleController : MonoBehaviour
     /// collision du joueur avec un obstacle
     /// </summary>
     // -------------------------------------------------------------------------------
-    private void resetMovementAfterDelay()
+    private void ResetMovementAfterDelay()
     {
         // Cas où le chronomètre relatif à l'arrêt du défilement des plans Unity n'est pas actif
         if (!_stoppedTimer)
