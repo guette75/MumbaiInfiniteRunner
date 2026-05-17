@@ -37,6 +37,16 @@ public class GameState : State
     // -------------------------------------------------------------------------------
     public override void Exit()
     {
+        // Récupération des données sauvegardées sur l'appareil du joueur
+        SaveData saveData = SaveService.Load();
+        // Cas où le temps est meilleurs (temps plus long, car on a réussi à perdre moins vite)
+        if (saveData.BestTime < Timer)
+        {
+            // Affectation du nouveau meilleurs temps
+            saveData.BestTime = Timer;
+            // Sauvegarde du meilleur temps
+            SaveService.Save(saveData);
+        }
         // Désabonnement de l'évènement déclenché lors de la mise à jour du nombre de vies du joueur
         EventSystem.OnPlayerLifeUpdated -= HandlePlayerLifeUpdated;
         Debug.Log("Game exited");

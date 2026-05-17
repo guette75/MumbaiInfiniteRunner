@@ -44,11 +44,12 @@ public static class SaveService
             // Conversion du JSON en un objet SaveData
             return JsonUtility.FromJson<SaveData>(json);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Debug.LogError($"Something went wrong with data loading {e}");
-            // Aucune donnée n'a pu être chargée suite au déclenchement de l'exception
-            return null;
+            Debug.LogWarning($"No data found, creating a new one... Details: {exception}");
+            // Aucune donnée n'a pu être chargée suite au déclenchement de l'exception, on crée donc une nouvelle
+            // instance
+            return new SaveData();
         }
     }
 }
